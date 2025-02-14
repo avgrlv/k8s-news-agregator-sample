@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: news-api-policy
+  namespace: news-system
+spec:
+  podSelector:
+    matchLabels:
+      app: news-api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress: #Разрешает входящие HTTP-запросы 
+  - from:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          app: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress: # Разрешает доступ к PostgreSQL (для чтения данных).
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432

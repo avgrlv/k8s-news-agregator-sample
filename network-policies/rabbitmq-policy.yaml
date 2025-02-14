@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rabbitmq-policy
+  namespace: news-system
+spec:
+  podSelector:
+    matchLabels:
+      app: rabbitmq
+  policyTypes:
+  - Ingress
+  ingress: # доступ только от News Collector и News Processor.
+  - from:
+    - podSelector:
+        matchLabels:
+          app: news-collector
+    - podSelector:
+        matchLabels:
+          app: news-processor
+    ports:
+    - protocol: TCP
+      port: 5672

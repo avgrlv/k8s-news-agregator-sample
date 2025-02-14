@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: news-config
+data:
+  rabbitmq-url: "amqp://user:password@rabbitmq-server:5672/"
+  postgres-url: "postgres://user:password@postgres-server:5432/newsdb"

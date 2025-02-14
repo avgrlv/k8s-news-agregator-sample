@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: news-collector
+spec:
+  schedule: "*/10 * * * *" # Запуск каждые 10 минут
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: news-collector
+            image: news-collector:v1.0
+            env:
+            - name: NEWS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: news-secrets
+                  key: api-key
+            - name: RABBITMQ_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: news-config
+                  key: rabbitmq-url
+            resources:
+              requests:
+                cpu: "200m"
+                memory: "256Mi"
+              limits:
+                cpu: "500m"
+                memory: "512Mi"
+          restartPolicy: OnFailure

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-processor
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: news-processor
+  template:
+    metadata:
+      labels:
+        app: news-processor
+    spec:
+      containers:
+      - name: news-processor
+        image: news-processor:v1.0
+        env:
+        - name: RABBITMQ_URL
+          valueFrom:
+            configMapKeyRef:
+              name: news-config
+              key: rabbitmq-url
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key: rabbit-username
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key:  rabbit-password
+        - name: POSTGRES_URL
+          valueFrom:
+            configMapKeyRef:
+              name: news-config
+              key: postgres-url
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key: db-username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key: db-password
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"

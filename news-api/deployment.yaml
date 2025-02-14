@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: news-api
+  template:
+    metadata:
+      labels:
+        app: news-api
+    spec:
+      containers:
+      - name: news-api
+        image: news-api:v1.0
+        env:
+        - name: POSTGRES_URL
+          valueFrom:
+            configMapKeyRef:
+              name: news-config
+              key: postgres-url
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key: db-username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key: db-password
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: news-secrets
+              key: api-key
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
